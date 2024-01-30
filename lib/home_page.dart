@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             Center(
               child: ElevatedButton(
                 style: buttonStyle,
-                child: const Text('Start a Live'),
+                child: const Text('Start a Live',style:TextStyle(color: Colors.white)),
                 onPressed: () => jumpToLivePage(
                   context,
                   isHost: true,
@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             Center(
               child: ElevatedButton(
                 style: buttonStyle,
-                child: const Text('Watch a Live'),
+                child: const Text('Watch a Live',style:TextStyle(color: Colors.white)),
                 onPressed: () => jumpToLivePage(
                   context,
                   isHost: false,

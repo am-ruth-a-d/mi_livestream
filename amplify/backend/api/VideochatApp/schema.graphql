@@ -1,5 +1,0 @@
-type Comments @model @auth(rules: [{allow: public}]) {
-  id: ID!
-  username: String
-  message: String
-} 

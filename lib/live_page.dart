@@ -2,11 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'package:zego_express_engine/zego_express_engine.dart';
-// import 'models/Comments.dart';
-// import 'package:amplify_flutter/amplify_flutter.dart';
+import 'models/Comments.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'key_center.dart';
 import 'utils/zegocloud_token.dart';
-// import 'package:amplify_api/amplify_api.dart';
 
 class LivePage extends StatefulWidget {
   const LivePage({
@@ -67,7 +66,7 @@ class _LivePageState extends State<LivePage> {
                     height: MediaQuery.of(context).size.width / 7,
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text(widget.isHost ? 'End Live' : 'Leave Live'),
+                      child: Text(widget.isHost ? 'End Live' : 'Leave Live',style:TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black26,
                       ),
@@ -94,9 +93,14 @@ class _LivePageState extends State<LivePage> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 // Implement send functionality.
-                                // createComments();
+                                await createComments();
+                                // Clear the text in the TextField
+                                setState(() {
+                                  message = ''; // Clear the message variable
+                                  commentController.clear(); // Clear the text field controller
+                                });
                               },
                               child: Text(
                                 'Send',
@@ -255,20 +259,12 @@ class _LivePageState extends State<LivePage> {
     }
   }
 
-//   Future<void> createComments() async {
-//     try {
-//       final model = Comments(username: widget.localUserName, message: message);
-//       final request = ModelMutations.create(model);
-//       final response = await Amplify.API.mutate(request: request).response;
-//
-//       final createdComments = response.data;
-//       if (createdComments == null) {
-//         safePrint('errors: ${response.errors}');
-//         return;
-//       }
-//       safePrint('Mutation result: ${createdComments.id}');
-//     } on ApiException catch (e) {
-//       safePrint('Mutation failed: $e');
-//     }
-//   }
+  Future<void> createComments() async {
+
+    final item = Comments(
+        username: widget.localUserName,
+        message: message);
+    await Amplify.DataStore.save(item);
+
+   }
 }
