@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
-import 'utils/permission.dart';
+// Dart imports:
+import 'dart:math';
 
+// Flutter imports:
+import 'package:flutter/material.dart';
+
+import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
+
+// Project imports:
+import 'constants.dart';
 import 'live_page.dart';
+import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage(
-      {Key? key, required this.localUserID, required this.localUserName})
-      : super(key: key);
+  const HomePage({Key? key, required this.localUserID, required this.localUserName}) : super(key: key);
 
   final String localUserID;
   final String localUserName;
@@ -15,21 +21,15 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
-  /// Users who use the same roomID can join the same live streaming.
-  final roomTextCtrl = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    requestPermission();
-  }
+class _HomePageState extends State<HomePage> {
+  /// Users who use the same liveID can join the same live streaming.
+  final liveTextCtrl =
+  TextEditingController(text: Random().nextInt(10000).toString());
 
   @override
   Widget build(BuildContext context) {
     final buttonStyle = ElevatedButton.styleFrom(
-      fixedSize: const Size(120, 60),
-      backgroundColor: const Color(0xff2C2F3E).withOpacity(0.6),
+      fixedSize: const Size(200, 60),
     );
 
     return Scaffold(
@@ -37,52 +37,59 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-                child: Text(
-              'Please test with two or more devices',
-              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 15),
-            )),
+            const Text('2台以上のデバイスでテストしてください'),
             const Divider(),
-            SizedBox(
-              height: 15,
-            ),
-            Text('Your UserID: ${widget.localUserID}'),
+            Text('ユーザーID:${widget.localUserID}'),
             const SizedBox(height: 20),
-            Text('Your UserName: ${widget.localUserName}'),
+            Text('ユーザー名:${widget.localUserName}'),
             const SizedBox(height: 20),
+
             TextFormField(
-              controller: roomTextCtrl,
-              decoration: const InputDecoration(labelText: 'roomID'),
+              controller: liveTextCtrl,
+              decoration: const InputDecoration(labelText: 'ライブIDを使用して参加する'),
             ),
             const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                style: buttonStyle,
-                child: const Text('Start a Live',style:TextStyle(color: Colors.white)),
-                onPressed: () => jumpToLivePage(
+            // click me to navigate to LivePage
+            ElevatedButton(
+              style: buttonStyle,
+              child: const Text('ライブを始めてください'),
+              onPressed: () {
+                if (ZegoUIKitPrebuiltLiveStreamingController()
+                    .minimize
+                    .isMinimizing) {
+                  /// when the application is minimized (in a minimized state),
+                  /// disable button clicks to prevent multiple PrebuiltLiveStreaming components from being created.
+                  return;
+                }
+
+                jumpToLivePage(
                   context,
+                  liveID: liveTextCtrl.text,
                   isHost: true,
-                  localUserID: widget.localUserID,
-                  localUserName: widget.localUserName,
-                  roomID: roomTextCtrl.text,
-                ),
-              ),
+                );
+              },
             ),
             const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                style: buttonStyle,
-                child: const Text('Watch a Live',style:TextStyle(color: Colors.white)),
-                onPressed: () => jumpToLivePage(
+            // click me to navigate to LivePage
+            ElevatedButton(
+              style: buttonStyle,
+              child: const Text('ぜひライブを見てください'),
+              onPressed: () {
+                if (ZegoUIKitPrebuiltLiveStreamingController()
+                    .minimize
+                    .isMinimizing) {
+                  /// when the application is minimized (in a minimized state),
+                  /// disable button clicks to prevent multiple PrebuiltLiveStreaming components from being created.
+                  return;
+                }
+
+                jumpToLivePage(
                   context,
+                  liveID: liveTextCtrl.text,
                   isHost: false,
-                  localUserID: widget.localUserID,
-                  localUserName: widget.localUserName,
-                  roomID: roomTextCtrl.text,
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),
@@ -90,21 +97,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  void jumpToLivePage(
-    BuildContext context, {
-    required String roomID,
-    required bool isHost,
-    required String localUserID,
-    required String localUserName,
-  }) {
+  void jumpToLivePage(BuildContext context,
+      {required String liveID, required bool isHost}) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => LivePage(
+          liveID: liveID,
           isHost: isHost,
-          localUserID: localUserID,
-          localUserName: localUserName,
-          roomID: roomID,
         ),
       ),
     );

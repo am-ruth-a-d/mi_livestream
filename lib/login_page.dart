@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:zego_express_engine/zego_express_engine.dart';
-import 'utils/permission.dart';
 import 'home_page.dart';
 import 'key_center.dart';
 
@@ -20,10 +19,10 @@ Future<void> createEngine() async {
 }
 
 void jumpToHomePage(
-  BuildContext context, {
-  required String localUserID,
-  required String localUserName,
-}) async {
+    BuildContext context, {
+      required String localUserID,
+      required String localUserName,
+    }) async {
   await createEngine();
   Navigator.pushReplacement(
     context,
@@ -51,8 +50,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    requestPermission();
-    userNameTextCtrl.text = 'username';
+    userNameTextCtrl.text = 'ユーザー_${userIDTextCtrl.text}';
   }
 
   @override
@@ -68,23 +66,22 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Please test with two or more devices',style: TextStyle(fontWeight: FontWeight.normal,fontSize: 18),),
+            const Text('2台以上のデバイスでテストしてください'),
             const Divider(),
-            SizedBox(height: 10,),
             TextFormField(
               controller: userIDTextCtrl,
-              decoration: const InputDecoration(labelText: 'Your UserID'),
+              decoration: const InputDecoration(labelText: 'ユーザーID'),
             ),
             const SizedBox(height: 20),
             TextFormField(
               controller: userNameTextCtrl,
-              decoration: const InputDecoration(labelText: 'Your UserName'),
+              decoration: const InputDecoration(labelText: 'ユーザー名'),
             ),
             const SizedBox(height: 20),
-            // click me to navigate to LivePage
+            // click me to navigate to CallPage
             ElevatedButton(
               style: buttonStyle,
-              child: const Text('Login'),
+              child: const Text('ログイン',style: TextStyle(color: Colors.white)),
               onPressed: () => jumpToHomePage(
                 context,
                 localUserID: userIDTextCtrl.text,

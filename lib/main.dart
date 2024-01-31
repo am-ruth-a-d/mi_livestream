@@ -4,26 +4,57 @@ import 'package:amplify_datastore/amplify_datastore.dart';
 import 'amplifyconfiguration.dart';
 import 'models/ModelProvider.dart';
 import 'login_page.dart';
+import 'gift/gift.dart';
 import 'package:amplify_api/amplify_api.dart';
+import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
 
-void main() async {
-  runApp(const MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
 
-   _configureAmplify();
+  final navigatorKey = GlobalKey<NavigatorState>();
+
+  ZegoGiftManager().cache.cache(giftItemList);
+
+  ZegoUIKit().initLog().then((value) {
+    runApp(MyApp(
+      navigatorKey: navigatorKey,
+    ));
+    _configureAmplify();
+  });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final GlobalKey<NavigatorState> navigatorKey;
 
+  const MyApp({
+    required this.navigatorKey,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const LoginPage(),
+      title: 'MI ライブストリーム',
+      home: LoginPage(),
+      navigatorKey: widget.navigatorKey,
+      builder: (BuildContext context, Widget? child) {
+        return Stack(
+          children: [
+            child!,
+            ZegoUIKitPrebuiltLiveStreamingMiniOverlayPage(
+              contextQuery: () {
+                return widget.navigatorKey.currentState!.context;
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
